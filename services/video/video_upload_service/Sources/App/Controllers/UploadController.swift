@@ -8,24 +8,14 @@ import common
 struct UploadController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         routes.post("video", "upload", use: upload)
+        routes.get("video", "download", ":id", use: download)
         routes.patch("video", "status", ":id", use: updateStatus)
         routes.get("video", "status", ":id", use: getStatus)
         routes.delete("video", ":id", use: delete)
     }
     
     func delete(req: Request) async throws -> Response {
-        let id = req.parameters.get("id")
-        guard let id = id else {
-            req.logger.error("Cannot find id in path parameter")
-            throw Abort(.badRequest)
-        }
-        
-        let uuid = UUID(uuidString: id)
-        let previousInfo = try await VideoInfo.find(uuid, on: req.db)
-        guard let previousInfo = previousInfo else {
-            req.logger.error("Cannot find model with id: \(uuid?.uuidString ?? "No found") ")
-            throw Abort(.notFound)
-        }
+        let previousInfo = try await findPreviousInfoById(req: req)
         try await deleteFile(req: req, previous: previousInfo)
         try await previousInfo.delete(on: req.db)
         
@@ -33,36 +23,13 @@ struct UploadController: RouteCollection {
     }
     
     func getStatus(req: Request) async throws -> VideoInfo {
-        let id = req.parameters.get("id")
-        guard let id = id else {
-            req.logger.error("Cannot find id in path parameter")
-            throw Abort(.badRequest)
-        }
-        
-        let uuid = UUID(uuidString: id)
-        let previousInfo = try await VideoInfo.find(uuid, on: req.db)
-        guard let previousInfo = previousInfo else {
-            req.logger.error("Cannot find model with id: \(uuid?.uuidString ?? "") ")
-            throw Abort(.notFound)
-        }
+        let previousInfo = try await findPreviousInfoById(req: req)
         return previousInfo
     }
     
     func updateStatus(req: Request) async throws -> Response {
-        let id = req.parameters.get("id")
+        let previousInfo = try await findPreviousInfoById(req: req)
         let body = try req.content.decode(UpdateStatusRequest.self)
-        
-        guard let id = id else {
-            req.logger.error("Cannot find id in path parameter")
-            throw Abort(.badRequest)
-        }
-        
-        let uuid = UUID(uuidString: id)
-        let previousInfo = try await VideoInfo.find(uuid, on: req.db)
-        guard let previousInfo = previousInfo else {
-            req.logger.error("Cannot find model with id: \(uuid?.uuidString ?? "") ")
-            throw Abort(.notFound)
-        }
         
         switch body.status {
         case .success:
@@ -88,6 +55,21 @@ struct UploadController: RouteCollection {
         try await videoInfo.create(on: req.db)
         
         return UploadResponse(id: videoInfo.id!, preSignedURL: presignedURL.absoluteString)
+    }
+    
+    func download(req: Request) async throws -> DownloadResponse {
+       let previousInfo = try await findPreviousInfoById(req: req)
+        guard let sourceURL = previousInfo.source else {
+            throw Abort(.badRequest, reason: "Missing source url")
+        }
+        let s3URL = URL(string: sourceURL)
+        guard let s3URL = s3URL else {
+            throw Abort(.badRequest, reason: "Source URL in incorrect format")
+        }
+
+        let presignedURL = try await req.s3.signURL(url: s3URL, httpMethod: .GET, expires: .hours(1))
+        
+        return DownloadResponse(id: previousInfo.id!, fileName: previousInfo.fileName, preSignedURL: presignedURL.absoluteString)
     }
 }
 
@@ -118,5 +100,20 @@ extension UploadController {
     func deleteFile(req: Request, previous data: VideoInfo) async throws {
         // check if object exists
         let _ = try await req.s3.deleteObject(.init(bucket: Environment.get(ENVIRONMENT_S3_BUCKET_NAME)!, key: data.fileName))
+    }
+    
+    func findPreviousInfoById(req: Request) async throws -> VideoInfo {
+        let id = req.parameters.get("id")
+        guard let id = id else {
+            req.logger.error("Cannot find id in path parameter")
+            throw Abort(.badRequest)
+        }
+        let uuid = UUID(uuidString: id)
+        let previousInfo = try await VideoInfo.find(uuid, on: req.db)
+        guard let previousInfo = previousInfo else {
+            req.logger.error("Cannot find model with id: \(uuid?.uuidString ?? "") ")
+            throw Abort(.notFound)
+        }
+        return previousInfo
     }
 }

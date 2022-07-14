@@ -4,21 +4,20 @@ on:
   push:
 
 jobs:
-  # test-services:
-  #   name: "Test Swift Packages"
-  #   runs-on: macos-latest
-  #   strategy:
-  #     matrix:
-  #       app:  ["video/video_upload_service"]
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: swift-actions/setup-swift@v1
-  #     - uses: docker-practice/actions-setup-docker@master
-  #     - name: Up required services
-  #       run: docker-compose up -d
-  #     - name: Test ${{ matrix.app }}
-  #       run: swift test
-  #       working-directory: services/${{ matrix.app }}
+  test-services:
+    name: "Test Swift Packages"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app:  ["video/video_upload_service"]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: swift-actions/setup-swift@v1
+      - name: Up required services
+        run: docker-compose up -d
+      # - name: Test ${{ matrix.app }}
+      #   run: swift test
+      #   working-directory: services/${{ matrix.app }}
   create-release:
     runs-on: ubuntu-latest
     permissions:

@@ -18,6 +18,7 @@ jobs:
       - name: Test ${{ matrix.app }}
         run: swift test
         working-directory: services/${{ matrix.app }}
+      - run: docker-compose down
   create-release:
     runs-on: ubuntu-latest
     permissions:

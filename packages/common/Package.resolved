@@ -46,6 +46,24 @@
       }
     },
     {
+      "identity" : "jmespath.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/adam-fowler/jmespath.swift.git",
+      "state" : {
+        "revision" : "4513d319c4aaa6c3b2ac18e1e6566a803515ad91",
+        "version" : "1.0.2"
+      }
+    },
+    {
+      "identity" : "mqtt-nio",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swift-server-community/mqtt-nio",
+      "state" : {
+        "revision" : "53d307b580f78354f3523a6cfde7cb3dbabfdde4",
+        "version" : "2.6.0"
+      }
+    },
+    {
       "identity" : "multipart-kit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/multipart-kit.git",
@@ -61,6 +79,24 @@
       "state" : {
         "revision" : "9e181d685a3dec1eef1fc6dacf606af364f86d68",
         "version" : "4.5.0"
+      }
+    },
+    {
+      "identity" : "soto",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/soto-project/soto",
+      "state" : {
+        "revision" : "9c938aadbbb33d6ed54d04dd6ba494f7f12e0905",
+        "version" : "6.0.0"
+      }
+    },
+    {
+      "identity" : "soto-core",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/soto-project/soto-core.git",
+      "state" : {
+        "revision" : "8e63c0f80db61f01c346f5109863bc2be29093e7",
+        "version" : "6.0.0"
       }
     },
     {

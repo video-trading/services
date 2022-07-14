@@ -19,6 +19,8 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0"),
         .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0"),
+        .package(url: "https://github.com/soto-project/soto", from: "6.0.0"),
+        .package(url: "https://github.com/swift-server-community/mqtt-nio", from: "2.6.0"),
     ],
     targets: [
         .target(
@@ -26,6 +28,8 @@ let package = Package(
             dependencies: [
                 .product(name: "Vapor", package: "vapor"),
                 .product(name: "Fluent", package: "fluent"),
+                .product(name: "MQTTNIO", package: "mqtt-nio"),
+                .product(name: "SotoS3", package: "soto"),
             ]
         ),
         .testTarget(

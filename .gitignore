@@ -2,3 +2,5 @@
 packages/.DS_Store
 services/.DS_Store
 .DS_Store
+volume
+.vscode

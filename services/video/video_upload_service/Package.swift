@@ -13,6 +13,7 @@ let package = Package(
         .package(url: "https://github.com/vapor/fluent-mongo-driver.git", from: "1.0.0"),
         .package(url: "https://github.com/soto-project/soto", from: "6.0.0"),
         .package(url: "https://github.com/sirily11/env-checker", from: "1.0.0" ),
+        .package(url: "https://github.com/swift-server-community/mqtt-nio", from: "2.6.0"),
         .package(path: "../../../packages/model"),
         .package(path: "../../../packages/common"),
     ],
@@ -22,11 +23,12 @@ let package = Package(
             dependencies: [
                 .product(name: "Fluent", package: "fluent"),
                 .product(name: "FluentMongoDriver", package: "fluent-mongo-driver"),
+                .product(name: "MQTTNIO", package: "mqtt-nio"),
                 .product(name: "Vapor", package: "vapor"),
                 .product(name: "SotoS3", package: "soto"),
                 .product(name: "model", package: "model"),
                 .product(name: "common", package: "common"),
-                .product(name: "env", package: "env-checker")
+                .product(name: "env", package: "env-checker"),
             ],
             swiftSettings: [
                 // Enable better optimizations when building in Release configuration. Despite the use of

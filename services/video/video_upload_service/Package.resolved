@@ -91,6 +91,15 @@
       }
     },
     {
+      "identity" : "mqtt-nio",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swift-server-community/mqtt-nio",
+      "state" : {
+        "revision" : "53d307b580f78354f3523a6cfde7cb3dbabfdde4",
+        "version" : "2.6.0"
+      }
+    },
+    {
       "identity" : "multipart-kit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/multipart-kit.git",

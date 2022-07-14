@@ -8,7 +8,7 @@ import common
 struct UploadController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         routes.post("video", "upload", use: upload)
-        routes.post("video", "status", ":id", use: updateStatus)
+        routes.patch("video", "status", ":id", use: updateStatus)
         routes.get("video", "status", ":id", use: getStatus)
         routes.delete("video", ":id", use: delete)
     }

@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "env-checker",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/sirily11/env-checker",
+      "state" : {
+        "revision" : "95084d100149c8881d755c34cd0df08c6bf76b24",
+        "version" : "1.0.0"
+      }
+    }
+  ],
+  "version" : 2
+}

@@ -7,11 +7,13 @@
 
 import Foundation
 import model
-
+import common
+import Vapor
 
 
 extension VideoInfoRequest {
     func toVideoInfo(presignedURL: URL) -> VideoInfo {
-        VideoInfo(title: title, labels: labels, description: description, cover: nil, source: presignedURL.absoluteString, transcoding: [], status: .pending, statusDescription: "Waiting user's upload", length: nil, fileName: fileName)
+        let bucketName = Environment.get(ENVIRONMENT_S3_BUCKET_NAME)!
+        return VideoInfo(title: title, labels: labels, description: description, cover: nil, source: presignedURL.absoluteString, transcoding: [], status: .pending, statusDescription: "Waiting user's upload", length: nil, fileName: fileName, bucketName: bucketName)
     }
 }

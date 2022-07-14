@@ -10,4 +10,5 @@ import Foundation
 public enum Channels: String {
     case transcodingWorker
     case transcodingService
+    case analyzingWorker
 }

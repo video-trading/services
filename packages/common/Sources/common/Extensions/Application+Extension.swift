@@ -100,7 +100,7 @@ public extension Request {
     }
     
     struct AWS {
-        var client: AWSClient {
+        public var client: AWSClient {
             return request.application.aws.client
         }
         
@@ -115,7 +115,7 @@ public extension Request {
     }
         
     struct MQTT {
-        var client: MQTTClient {
+        public var client: MQTTClient {
             return request.application.mqtt.client
         }
         

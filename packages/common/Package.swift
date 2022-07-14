@@ -21,6 +21,7 @@ let package = Package(
         .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0"),
         .package(url: "https://github.com/soto-project/soto", from: "6.0.0"),
         .package(url: "https://github.com/swift-server-community/mqtt-nio", from: "2.6.0"),
+        .package(url: "https://github.com/vapor/fluent-mongo-driver.git", from: "1.0.0"),
     ],
     targets: [
         .target(
@@ -30,6 +31,7 @@ let package = Package(
                 .product(name: "Fluent", package: "fluent"),
                 .product(name: "MQTTNIO", package: "mqtt-nio"),
                 .product(name: "SotoS3", package: "soto"),
+                .product(name: "FluentMongoDriver", package: "fluent-mongo-driver"),
             ]
         ),
         .testTarget(

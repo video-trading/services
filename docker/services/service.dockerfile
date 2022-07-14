@@ -11,7 +11,7 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
 
 WORKDIR /app/
 COPY services/${APP_NAME} /app/services/${APP_NAME}
-COPY packages /app/swift_packages
+COPY packages /app/packages
 
 WORKDIR /app/services/${APP_NAME}
 RUN swift build -c release --static-swift-stdlib

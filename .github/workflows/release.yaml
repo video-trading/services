@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        app:  [""]
+        app:  ["video/video_upload_service"]
     steps:
       - uses: actions/checkout@v2
       - name: Set up Docker Buildx

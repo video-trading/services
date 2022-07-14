@@ -6,7 +6,7 @@ on:
 jobs:
   test-services:
     name: "Test Swift Packages"
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       matrix:
         app:  ["video/video_upload_service"]
@@ -15,9 +15,9 @@ jobs:
       - uses: swift-actions/setup-swift@v1
       - name: Up required services
         run: docker-compose up -d
-      # - name: Test ${{ matrix.app }}
-      #   run: swift test
-      #   working-directory: services/${{ matrix.app }}
+      - name: Test ${{ matrix.app }}
+        run: swift test
+        working-directory: services/${{ matrix.app }}
   create-release:
     runs-on: ubuntu-latest
     permissions:

@@ -20,6 +20,11 @@ struct UploadResponse: Content {
     var preSignedURL: String
 }
 
+struct DownloadResponse: Content {
+    var id: UUID
+    var fileName: String
+    var preSignedURL: String
+}
 
 struct UpdateStatusRequest: Content {
     var status: UploadStatus

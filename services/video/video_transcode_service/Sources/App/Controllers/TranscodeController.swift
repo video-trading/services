@@ -95,7 +95,7 @@ struct TranscodeController: RouteCollection {
         
     
         
-        return SubmitAnalyzingResultResponse(jobs: targetTranscodingJobs, createdAt: .now)
+        return SubmitAnalyzingResultResponse(jobs: targetTranscodingJobs, createdAt: Date())
     }
     
 }

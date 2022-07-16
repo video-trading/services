@@ -11,6 +11,7 @@ import model
  */
 struct TranscodeController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
+        routes.post("video", "transcoding", ":id", use: submitTranscodeRequest)
         routes.post("video", "transcoding", "analyzing", use: submitAnalyzingResult)
         routes.post("video", "transcoding", "result" ,use: submitTranscodingResult)
         routes.get("video", "transcoding", "result", ":id", use: getTranscodingJobs)
@@ -18,8 +19,21 @@ struct TranscodeController: RouteCollection {
     /**
      Submit a transcoding request. This will also send video to the analyzing worker
      */
-    func submitTranscodeRequest(req: Request) async throws -> Response {
-        return Response(status: .accepted)
+    func submitTranscodeRequest(req: Request) async throws -> AnalyzingJob {
+        let id = try req.parameters.require("id", as: UUID.self)
+        let video = try await VideoInfo.find(id, on: req.db)
+        guard let video = video else {
+            throw Abort(.notFound, reason: "Cannot find video with id: \(id)")
+        }
+        let downloadURL = try await getDownloadURL(req: req, video: video)
+        let job = try await AnalyzingJob.fromVideo(req: req, videoSource: downloadURL, videoId: id.uuidString)
+        let encodedData = try JSONEncoder().encode(job)
+        
+        video.status = .encoding
+        try await video.update(on: req.db)
+        
+        try await req.mqtt.client.publish(to: Channels.analyzingWorker.rawValue, payload: .init(bytes: encodedData), qos: .atLeastOnce)
+        return job
     }
     
     /**
@@ -71,7 +85,7 @@ struct TranscodeController: RouteCollection {
         video.cover = analyzingResult.cover
         video.length = analyzingResult.length
         video.quality = analyzingResult.quality
-        try await video.save(on: req.db)
+        try await video.update(on: req.db)
         
         // create a list of transcoding jobs
         let targetTranscodingJobs: [TranscodingJob] = try await analyzingResult.quality.getListTranscodingTargets().concurrentMap { res async throws in

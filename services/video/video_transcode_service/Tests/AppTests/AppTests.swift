@@ -127,7 +127,56 @@ final class AppTests: XCTestCase {
             XCTAssertEqual(res.status, .ok)
             XCTAssertEqual(content.status, .failed)
         })
+    }
+    
+    
+    func testSubmitTranscodingRequest() async throws {
+        let app = Application(.testing)
+        defer {
+            cleanUp(app: app)
+            app.shutdown()
+        }
+        try configure(app)
         
+        let video = VideoInfo(title: "a", labels: [], description: nil, cover: nil, source: "http://localhost:4566/video-trading/upload/file3.mov",
+                              transcoding: [], status: .uploaded, statusDescription: nil, length: nil,
+                              fileName: "upload/file3.mov", bucketName: "video-trading")
         
+        let  _ = try? await app.aws.s3.createBucket(.init(bucket: "video-trading"))
+        let _ = try await app.aws.s3.putObject(.init(bucket: "video-trading", key: "upload/file3.mov"))
+        
+        try await video.create(on: app.db)
+        
+        try app.test(.POST, "video/transcoding/\(video.id!.uuidString)", afterResponse: { res in
+            XCTAssertEqual(res.status, .ok)
+            let data = try res.content.decode(AnalyzingJob.self)
+            XCTAssertContains(data.cover, "http://localhost:4566/video-trading/cover/\(video.id!.uuidString).png")
+        })
+        
+        let updatedVideo = try await VideoInfo.find(video.id, on: app.db)
+        XCTAssertEqual(updatedVideo!.status, .encoding)        
+    }
+    
+    
+    func testSubmitTranscodingRequestNotFound() async throws {
+        let app = Application(.testing)
+        defer {
+            cleanUp(app: app)
+            app.shutdown()
+        }
+        try configure(app)
+        
+        let video = VideoInfo(title: "a", labels: [], description: nil, cover: nil, source: "http://localhost:4566/video-trading/upload/file4.mov",
+                              transcoding: [], status: .uploaded, statusDescription: nil, length: nil,
+                              fileName: "upload/file4.mov", bucketName: "video-trading")
+        
+        let  _ = try? await app.aws.s3.createBucket(.init(bucket: "video-trading"))
+        let _ = try await app.aws.s3.putObject(.init(bucket: "video-trading", key: "upload/file4.mov"))
+        
+        try await video.create(on: app.db)
+        
+        try app.test(.POST, "video/transcoding/\(UUID().uuidString)", afterResponse: { res in
+            XCTAssertEqual(res.status, .notFound)
+        })
     }
 }

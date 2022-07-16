@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "hello_world_service",
+    name: "video_transcode_service",
     platforms: [
        .macOS(.v12)
     ],
@@ -11,6 +11,10 @@ let package = Package(
         .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0"),
         .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0"),
         .package(url: "https://github.com/vapor/fluent-mongo-driver.git", from: "1.0.0"),
+        .package(url: "https://github.com/sirily11/env-checker", from: "1.0.0" ),
+        .package(url: "https://github.com/swift-server-community/mqtt-nio", from: "2.6.0"),
+        .package(path: "../../../packages/model"),
+        .package(path: "../../../packages/common"),
     ],
     targets: [
         .target(
@@ -18,7 +22,10 @@ let package = Package(
             dependencies: [
                 .product(name: "Fluent", package: "fluent"),
                 .product(name: "FluentMongoDriver", package: "fluent-mongo-driver"),
-                .product(name: "Vapor", package: "vapor")
+                .product(name: "Vapor", package: "vapor"),
+                .product(name: "model", package: "model"),
+                .product(name: "common", package: "common"),
+                .product(name: "env", package: "env-checker"),
             ],
             swiftSettings: [
                 // Enable better optimizations when building in Release configuration. Despite the use of

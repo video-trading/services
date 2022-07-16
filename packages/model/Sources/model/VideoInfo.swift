@@ -2,6 +2,7 @@ import Fluent
 import Foundation
 import Vapor
 
+
 public enum VideoStatus: String, Codable {
     case success
     case failed
@@ -11,29 +12,11 @@ public enum VideoStatus: String, Codable {
     case uploaded
 }
 
-public enum TranscodingResolution: String, Codable {
-    case resolution144P = "144"
-    case resolution240P = "240"
-    case resolution360P = "360"
-    case resolution480P = "480"
-    case resolution720P = "720"
-    case resolution1080P = "1080"
-    case resolution1440P = "1440"
-    case resolution2160P = "2160"
-}
-
 protocol VideoInfoProtocol: Content {
     var title: String { get set }
     var labels: [String] { get set }
     var description: String? { get set }
     var cover: String? { get set }
-}
-
-public struct Transcoding: Content {
-    public var quality: TranscodingResolution
-    public var bucketName: String
-    public var fileName: String
-    public var createdAt: Date
 }
 
 public struct VideoInfoRequest: VideoInfoProtocol {
@@ -78,17 +61,26 @@ public final class VideoInfo: Model, VideoInfoProtocol {
     public var source: String?
 
     @Field(key: "transcodings")
-    public var transcoding: [Transcoding]
+    public var transcoding: [TranscodingInfo]
 
     @OptionalField(key: "length")
     public var length: Int?
-    
-    @Field(key: "fileName")
+
+    @Field(key: "file_name")
     public var fileName: String
+
+    @Field(key: "bucket_name")
+    public var bucketName: String
+    
+    @OptionalField(key: "quality")
+    public var quality: VideoResolution?
 
     public init() {}
 
-    public init(id: UUID? = nil, title: String, labels: [String], description: String?, cover: String?, source: String?, transcoding: [Transcoding], status: VideoStatus, statusDescription: String?, length: Int?, fileName: String) {
+    public init(id: UUID? = nil, title: String, labels: [String], description: String?, cover: String?,
+                source: String?, transcoding: [TranscodingInfo], status: VideoStatus, statusDescription: String?,
+                length: Int?, fileName: String, bucketName: String, quality: VideoResolution? = nil)
+    {
         self.id = id
         self.title = title
         self.labels = labels
@@ -100,5 +92,7 @@ public final class VideoInfo: Model, VideoInfoProtocol {
         self.statusDescription = statusDescription
         self.length = length
         self.fileName = fileName
+        self.bucketName = bucketName
+        self.quality = quality
     }
 }

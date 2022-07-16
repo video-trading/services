@@ -9,7 +9,7 @@ jobs:
     runs-on: self-hosted
     strategy:
       matrix:
-        app:  ["video/video_upload_service"]
+        app:  ["video/video_upload_service", "video/video_transcode_service"]
     steps:
       - uses: actions/checkout@v3
       - uses: swift-actions/setup-swift@v1

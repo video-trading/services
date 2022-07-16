@@ -10,7 +10,7 @@ import XCTest
 
 class VideoInfoTests: XCTestCase {
     func testVideoInfoRequest() throws {
-        let request = VideoInfoRequest(title: "Hello world", labels: [])
+        let request = VideoInfoRequest(title: "Hello world", labels: [], fileName: "test.mov")
         let encoded = try JSONEncoder().encode(request)
         let decoded = try JSONDecoder().decode(VideoInfoRequest.self, from: encoded)
         XCTAssertEqual(decoded.title, "Hello world")
@@ -18,7 +18,7 @@ class VideoInfoTests: XCTestCase {
     }
 
     func testVideoInfoCreate() throws {
-        let info = VideoInfo(title: "Hello", labels: [], description: "Hello", cover: nil, source: nil, transcoding: [], status: .encoding, statusDescription: nil, length: nil)
+        let info = VideoInfo(title: "Hello", labels: [], description: "Hello", cover: nil, source: nil, transcoding: [], status: .encoding, statusDescription: nil, length: nil, fileName: "test.mov")
 
         let encoded = try JSONEncoder().encode(info)
         let decoded = try JSONDecoder().decode(VideoInfo.self, from: encoded)

@@ -77,7 +77,7 @@ extension UploadController {
     func onUpdateStatusSuccess(req: Request, previous data: VideoInfo) async {
         // check if object exists
         do {
-            let _ = try await req.s3.getObject(.init(bucket: Environment.get(ENVIRONMENT_S3_BUCKET_NAME)!, key: data.fileName))
+            let _ = try await req.s3.getObject(.init(bucket: data.bucketName, key: data.fileName))
             data.status = .uploaded
             data.statusDescription = "Video has been uploaded"
         } catch {
@@ -103,15 +103,10 @@ extension UploadController {
     }
     
     func findPreviousInfoById(req: Request) async throws -> VideoInfo {
-        let id = req.parameters.get("id")
-        guard let id = id else {
-            req.logger.error("Cannot find id in path parameter")
-            throw Abort(.badRequest)
-        }
-        let uuid = UUID(uuidString: id)
-        let previousInfo = try await VideoInfo.find(uuid, on: req.db)
+        let id = try req.parameters.require("id", as: UUID.self)
+        let previousInfo = try await VideoInfo.find(id, on: req.db)
         guard let previousInfo = previousInfo else {
-            req.logger.error("Cannot find model with id: \(uuid?.uuidString ?? "") ")
+            req.logger.error("Cannot find model with id: \(id.uuidString) ")
             throw Abort(.notFound)
         }
         return previousInfo

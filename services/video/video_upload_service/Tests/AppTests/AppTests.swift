@@ -56,7 +56,7 @@ final class AppTests: XCTestCase {
         }
         try configure(app)
         
-        let info = VideoInfo(title: "Mock", labels: [], description: nil, cover: nil, source: "https://localhost:4566/video-trading/test.mov", transcoding: [], status: .uploaded, statusDescription: nil, length: nil, fileName: "test.mov")
+        let info = VideoInfo(title: "Mock", labels: [], description: nil, cover: nil, source: "https://localhost:4566/video-trading/test.mov", transcoding: [], status: .uploaded, statusDescription: nil, length: nil, fileName: "test.mov", bucketName: "test-bucket")
         try await info.create(on: app.db)
         
         try app.test(.GET, "video/download/\(info.id!.uuidString)") { res in

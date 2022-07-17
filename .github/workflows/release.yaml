@@ -14,6 +14,14 @@ jobs:
         function: ["authentication"]
     steps:
       - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7.1.5
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+      - run: pnpm install
+        working-directory: functions/${{ matrix.function }}
       - name: Publish
         uses: cloudflare/wrangler-action@2.0.0
         with:

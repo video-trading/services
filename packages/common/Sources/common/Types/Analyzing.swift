@@ -18,6 +18,11 @@ public struct AnalyzingJob: Content {
      Pre-signed url for video download
      */
     public var source: String
+    
+    public init(cover: String, source: String) {
+        self.cover = cover
+        self.source = source
+    }
 
     
     public static func fromVideo(req: Request, videoSource: String, videoId: String) async throws -> AnalyzingJob {

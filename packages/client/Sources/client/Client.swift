@@ -5,7 +5,7 @@ protocol ClientProtocol {
     func initialize() throws -> Void
 }
 
-class Client: ClientProtocol {
+public class Client: ClientProtocol {
     var name: String = ""
 
     var requiredEnvironmentKeys: [String] = []

@@ -11,6 +11,7 @@ final class AppTests: XCTestCase {
         setenv(ENVIRONMENT_S3_BUCKET_NAME, "video-trading", 1)
         setenv(ENVIRONMENT_ACCESS_KEY, "test", 1)
         setenv(ENVIRONMENT_SECRET_KEY, "test", 1)
+        setenv(ENVIRONMENT_TRANSCODING_URL, "https://video.mock-api-services.workers.dev", 1)
     }
     
     func testUpload() throws {

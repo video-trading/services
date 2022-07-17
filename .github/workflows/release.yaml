@@ -6,6 +6,20 @@ on:
       - released
 
 jobs:
+  serverless-functions:
+    name: Deploy cloudflare serverless functions
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        function: ["authentication"]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Publish
+        uses: cloudflare/wrangler-action@2.0.0
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          workingDirectory: "functions/${{ matrix.function }}"
+
   docker-service:
     name: Build dockerized services
     runs-on: ubuntu-latest
@@ -13,7 +27,7 @@ jobs:
       matrix:
         app:  ["video/video_upload_service", "video/video_transcode_service"]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v2

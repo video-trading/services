@@ -19,7 +19,6 @@ jobs:
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           workingDirectory: "functions/${{ matrix.function }}"
-          command: "deploy"
 
   docker-service:
     name: Build dockerized services

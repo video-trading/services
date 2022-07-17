@@ -33,7 +33,7 @@ extension URL {
         let bucket = Environment.get(ENVIRONMENT_S3_BUCKET_NAME)!
         let endpoint = Environment.get(ENVIRONMENT_S3_ENDPOINT)!
         
-        let returnedURL =  URL(string: "https://\(endpoint)/\(bucket)/\(baseName)")
+        let returnedURL =  URL(string: "\(endpoint)/\(bucket)/\(baseName)")
         guard let returnedURL = returnedURL else {
             Logger(label: "s3").critical("Cannot create presigned url")
             throw Abort(.badRequest)

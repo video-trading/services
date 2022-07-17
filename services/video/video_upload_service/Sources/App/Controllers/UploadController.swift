@@ -16,10 +16,7 @@ struct UploadController: RouteCollection {
     
     func delete(req: Request) async throws -> Response {
         let previousInfo = try await findPreviousInfoById(req: req)
-        try await deleteFile(req: req, previous: previousInfo)
-        try await previousInfo.delete(on: req.db)
-        
-        return Response(status: .ok)
+        return try await req.delete(video: previousInfo)
     }
     
     func getStatus(req: Request) async throws -> VideoInfo {
@@ -30,77 +27,19 @@ struct UploadController: RouteCollection {
     func updateStatus(req: Request) async throws -> Response {
         let previousInfo = try await findPreviousInfoById(req: req)
         let body = try req.content.decode(UpdateStatusRequest.self)
-        
-        switch body.status {
-        case .success:
-            await onUpdateStatusSuccess(req: req, previous: previousInfo)
-        case .failed:
-            await onUpdateStatusFailed(req: req, previous: previousInfo)
-        case .canceled:
-            await onUpdateStatusFailed(req: req, previous: previousInfo)
-            
-        }
-        try await previousInfo.update(on: req.db)
-        return Response(status: .accepted)
+        return try await req.updateStatus(video: previousInfo, status: body)
     }
     
     func upload(req: Request) async throws -> UploadResponse {
         var body = try req.content.decode(VideoInfoRequest.self)
-        
-        let s3URL = try URL.s3(object: body.fileName)
-        body.fileName = s3URL.fileName
-        
-        let presignedURL = try await req.s3.signURL(url: s3URL.url, httpMethod: .PUT, expires: .hours(1))
-        let videoInfo = body.toVideoInfo(presignedURL: s3URL.url)
-        try await videoInfo.create(on: req.db)
-        
-        return UploadResponse(id: videoInfo.id!, preSignedURL: presignedURL.absoluteString)
+        return try await req.upload(video: &body)
     }
     
     func download(req: Request) async throws -> DownloadResponse {
        let previousInfo = try await findPreviousInfoById(req: req)
-        guard let sourceURL = previousInfo.source else {
-            throw Abort(.badRequest, reason: "Missing source url")
-        }
-        let s3URL = URL(string: sourceURL)
-        guard let s3URL = s3URL else {
-            throw Abort(.badRequest, reason: "Source URL in incorrect format")
-        }
-
-        let presignedURL = try await req.s3.signURL(url: s3URL, httpMethod: .GET, expires: .hours(1))
-        
-        return DownloadResponse(id: previousInfo.id!, fileName: previousInfo.fileName, preSignedURL: presignedURL.absoluteString)
-    }
-}
-
-extension UploadController {
-    func onUpdateStatusSuccess(req: Request, previous data: VideoInfo) async {
-        // check if object exists
-        do {
-            let _ = try await req.s3.getObject(.init(bucket: data.bucketName, key: data.fileName))
-            data.status = .uploaded
-            data.statusDescription = "Video has been uploaded"
-        } catch {
-            req.logger.error("User submit a success status but cannot find object with name \(data.fileName)")
-            data.status = .failed
-            data.statusDescription = "Upload failed"
-        }
+       return try await req.download(video: previousInfo)
     }
     
-    func onUpdateStatusFailed(req: Request, previous data: VideoInfo) async {
-        data.status = .failed
-        data.statusDescription = "Failed to upload"
-    }
-    
-    func onUpdateStatusCancelled(req: Request, previous data: VideoInfo) async {
-        data.status = .canceled
-        data.statusDescription = "User cancelled file upload"
-    }
-    
-    func deleteFile(req: Request, previous data: VideoInfo) async throws {
-        // check if object exists
-        let _ = try await req.s3.deleteObject(.init(bucket: Environment.get(ENVIRONMENT_S3_BUCKET_NAME)!, key: data.fileName))
-    }
     
     func findPreviousInfoById(req: Request) async throws -> VideoInfo {
         let id = try req.parameters.require("id", as: UUID.self)

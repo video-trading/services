@@ -16,6 +16,7 @@ let package = Package(
         .package(url: "https://github.com/swift-server-community/mqtt-nio", from: "2.6.0"),
         .package(path: "../../../packages/model"),
         .package(path: "../../../packages/common"),
+        .package(path: "../../../packages/client"),
     ],
     targets: [
         .target(
@@ -29,6 +30,8 @@ let package = Package(
                 .product(name: "model", package: "model"),
                 .product(name: "common", package: "common"),
                 .product(name: "env", package: "env-checker"),
+                .product(name: "client", package: "client"),
+                
             ],
             swiftSettings: [
                 // Enable better optimizations when building in Release configuration. Despite the use of

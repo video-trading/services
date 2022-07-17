@@ -5,6 +5,7 @@ import SotoS3
 import common
 import env
 import MQTTNIO
+import client
 
 
 fileprivate func checkENV(_ app: Application) throws {
@@ -34,6 +35,8 @@ public func configure(_ app: Application) throws {
     try initializeDB(app)
     initializeAWS(app)
     try initializeMQTT(app)
+    
+    app.videoTranscoding.client = VideoTranscodingClient()
     
     // register routes
     try routes(app)

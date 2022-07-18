@@ -2,13 +2,17 @@ import { handler, Message } from ".";
 import { ethers } from "ethers";
 
 describe("Given a handler", () => {
-  test("When authentication failed", () => {
+  beforeAll(() => {
+    process.env.PASSWORD = "password";
+  });
+
+  test("When authentication failed", async () => {
     const message: Message = {
       message: "Hello World",
       signature: "0x",
       address: "0x0000000000000000000000000000000000000000",
     };
-    const response = handler(message);
+    const response = await handler(message);
     expect(response.statusCode).toBe(403);
   });
 
@@ -22,8 +26,9 @@ describe("Given a handler", () => {
       signature: signature,
       address: wallet.address,
     };
-    const response = handler(message);
+    const response = await handler(message);
     expect(response.statusCode).toBe(200);
+    let body = JSON.parse(response.body);
   });
 
   test("When authentication failed", async () => {
@@ -36,7 +41,7 @@ describe("Given a handler", () => {
       signature: signature,
       address: wallet.address,
     };
-    const response = handler(message);
+    const response = await handler(message);
     expect(response.statusCode).toBe(403);
   });
 });

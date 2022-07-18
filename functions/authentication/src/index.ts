@@ -47,6 +47,9 @@ export default {
 
     return new Response(response.body, {
       status: response.statusCode,
+      headers: {
+        "Content-Type": "application/json",
+      }
     });
   },
 };

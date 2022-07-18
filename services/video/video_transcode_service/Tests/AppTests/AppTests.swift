@@ -4,6 +4,8 @@ import XCTVapor
 @testable import model
 
 final class AppTests: XCTestCase {
+    let payload = JWTVerificationPayload(subject: .init(value: "Hello"), expiration: .init(value: .now.addingTimeInterval(10)), userId: "0xabcde")
+    
     override func setUp() async throws {
         setenv(ENVIRONMENT_DB_KEY, "mongodb://user:password@localhost:27017/video", 1)
         setenv(ENVIRONMENT_S3_REGION, "sgp1", 1)
@@ -11,6 +13,7 @@ final class AppTests: XCTestCase {
         setenv(ENVIRONMENT_S3_BUCKET_NAME, "video-trading", 1)
         setenv(ENVIRONMENT_ACCESS_KEY, "test", 1)
         setenv(ENVIRONMENT_SECRET_KEY, "test", 1)
+        setenv(ENVIRONMENT_PASSWORD, "password", 1)
     }
     
     func cleanUp(app: Application) {
@@ -24,6 +27,7 @@ final class AppTests: XCTestCase {
             app.shutdown()
         }
         try configure(app)
+        let token = try app.jwt.signers.sign(payload)
         
         let video = VideoInfo(title: "a", labels: [], description: nil, cover: nil, source: "http://localhost:4566/video-trading/upload/file.mov",
                               transcoding: [], status: .uploaded, statusDescription: nil, length: nil,
@@ -35,7 +39,9 @@ final class AppTests: XCTestCase {
         
         try await video.create(on: app.db)
         
-        try app.test(.GET, "video/transcoding/result/\(video.id!)", afterResponse: { res in
+        try app.test(.GET, "video/transcoding/result/\(video.id!)", beforeRequest: { req in
+            req.headers.bearerAuthorization = BearerAuthorization(token: token)
+        }, afterResponse: { res in
             let content = try res.content.decode([TranscodingJob].self)
             XCTAssertEqual(res.status, .ok)
             XCTAssertEqual(content.count, 0)
@@ -43,6 +49,7 @@ final class AppTests: XCTestCase {
         
         try app.test(.POST, "video/transcoding/analyzing", beforeRequest: { req in
             try req.content.encode(AnalyzingRequest(videoId: video.id!, quality: .resolution360P, length: 10, cover: "https://my_cover.png", fileName: video.fileName))
+            req.headers.bearerAuthorization = BearerAuthorization(token: token)
         }, afterResponse: { res in
             XCTAssertEqual(res.status, .ok)
         })
@@ -54,7 +61,9 @@ final class AppTests: XCTestCase {
         
         
         
-        try app.test(.GET, "video/transcoding/result/\(video.id!)", afterResponse: { res in
+        try app.test(.GET, "video/transcoding/result/\(video.id!)", beforeRequest: { req in
+            req.headers.bearerAuthorization = BearerAuthorization(token: token)
+        }, afterResponse: { res in
             XCTAssertEqual(res.status, .ok)
             let content = try res.content.decode([TranscodingJob].self)
             XCTAssertEqual(content.count, 3)
@@ -70,6 +79,7 @@ final class AppTests: XCTestCase {
         try app.test(.POST, "video/transcoding/result", beforeRequest: { req in
             videoTranscodingInfo.status = .uploaded
             try req.content.encode(videoTranscodingInfo)
+            req.headers.bearerAuthorization = BearerAuthorization(token: token)
         }, afterResponse: { res in
             let content = try res.content.decode(TranscodingInfo.self)
             XCTAssertEqual(res.status, .ok)
@@ -84,6 +94,7 @@ final class AppTests: XCTestCase {
             app.shutdown()
         }
         try configure(app)
+        let token = try app.jwt.signers.sign(payload)
         
         let video = VideoInfo(title: "a", labels: [], description: nil, cover: nil, source: "http://localhost:4566/video-trading/upload/file2.mov",
                               transcoding: [], status: .uploaded, statusDescription: nil, length: nil,
@@ -95,7 +106,9 @@ final class AppTests: XCTestCase {
         
         try await video.create(on: app.db)
         
-        try app.test(.GET, "video/transcoding/result/\(video.id!)", afterResponse: { res in
+        try app.test(.GET, "video/transcoding/result/\(video.id!)",beforeRequest: { req in
+            req.headers.bearerAuthorization = BearerAuthorization(token: token)
+        } ,afterResponse: { res in
             let content = try res.content.decode([TranscodingJob].self)
             XCTAssertEqual(res.status, .ok)
             XCTAssertEqual(content.count, 0)
@@ -103,11 +116,14 @@ final class AppTests: XCTestCase {
         
         try app.test(.POST, "video/transcoding/analyzing", beforeRequest: { req in
             try req.content.encode(AnalyzingRequest(videoId: video.id!, quality: .resolution360P, length: 10, cover: "", fileName: video.fileName))
+            req.headers.bearerAuthorization = BearerAuthorization(token: token)
         }, afterResponse: { res in
             XCTAssertEqual(res.status, .ok)
         })
         
-        try app.test(.GET, "video/transcoding/result/\(video.id!)", afterResponse: { res in
+        try app.test(.GET, "video/transcoding/result/\(video.id!)", beforeRequest: { req in
+            req.headers.bearerAuthorization = BearerAuthorization(token: token)
+        } , afterResponse: { res in
             XCTAssertEqual(res.status, .ok)
             let content = try res.content.decode([TranscodingJob].self)
             XCTAssertEqual(content.count, 3)
@@ -122,6 +138,7 @@ final class AppTests: XCTestCase {
         try app.test(.POST, "video/transcoding/result", beforeRequest: { req in
             videoTranscodingInfo.status = .uploaded
             try req.content.encode(videoTranscodingInfo)
+            req.headers.bearerAuthorization = BearerAuthorization(token: token)
         }, afterResponse: { res in
             let content = try res.content.decode(TranscodingInfo.self)
             XCTAssertEqual(res.status, .ok)
@@ -137,6 +154,7 @@ final class AppTests: XCTestCase {
             app.shutdown()
         }
         try configure(app)
+        let token = try app.jwt.signers.sign(payload)
         
         let video = VideoInfo(title: "a", labels: [], description: nil, cover: nil, source: "http://localhost:4566/video-trading/upload/file3.mov",
                               transcoding: [], status: .uploaded, statusDescription: nil, length: nil,
@@ -147,7 +165,9 @@ final class AppTests: XCTestCase {
         
         try await video.create(on: app.db)
         
-        try app.test(.POST, "video/transcoding/\(video.id!.uuidString)", afterResponse: { res in
+        try app.test(.POST, "video/transcoding/\(video.id!.uuidString)", beforeRequest: { req in
+            req.headers.bearerAuthorization = BearerAuthorization(token: token)
+        }, afterResponse: { res in
             XCTAssertEqual(res.status, .ok)
             let data = try res.content.decode(AnalyzingJob.self)
             XCTAssertContains(data.cover, "http://localhost:4566/video-trading/cover/\(video.id!.uuidString).png")
@@ -165,6 +185,7 @@ final class AppTests: XCTestCase {
             app.shutdown()
         }
         try configure(app)
+        let token = try app.jwt.signers.sign(payload)
         
         let video = VideoInfo(title: "a", labels: [], description: nil, cover: nil, source: "http://localhost:4566/video-trading/upload/file4.mov",
                               transcoding: [], status: .uploaded, statusDescription: nil, length: nil,
@@ -175,7 +196,9 @@ final class AppTests: XCTestCase {
         
         try await video.create(on: app.db)
         
-        try app.test(.POST, "video/transcoding/\(UUID().uuidString)", afterResponse: { res in
+        try app.test(.POST, "video/transcoding/\(UUID().uuidString)",beforeRequest: { req in
+            req.headers.bearerAuthorization = BearerAuthorization(token: token)
+        } , afterResponse: { res in
             XCTAssertEqual(res.status, .notFound)
         })
     }

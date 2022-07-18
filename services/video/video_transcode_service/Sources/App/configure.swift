@@ -21,6 +21,7 @@ fileprivate func checkENV(_ app: Application) throws {
 
 // configures your application
 public func configure(_ app: Application) throws {
+    let initializeHelper = InitializeHelper(app: app)
     let corsConfiguration = CORSMiddleware.Configuration(
         allowedOrigin: .all, allowedMethods: [.GET, .POST, .PUT, .OPTIONS, .DELETE, .PATCH],
         allowedHeaders: [.accept, .authorization, .contentType, .origin, .xRequestedWith, .userAgent, .accessControlAllowOrigin]
@@ -29,10 +30,12 @@ public func configure(_ app: Application) throws {
     app.middleware.use(cors, at: .beginning)
     
     try checkENV(app)
-    try initializeMQTT(app)
-    try initializeDB(app)
-    initializeAWS(app)
-
+    try initializeHelper.initializeDB()
+    try initializeHelper.initializeMQTT()
+    try initializeHelper.initializeAWS()
+    try initializeHelper.initializeJWT()
+    
+    
     // register routes
     try routes(app)
 }

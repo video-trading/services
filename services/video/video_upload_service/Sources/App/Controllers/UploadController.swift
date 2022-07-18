@@ -15,6 +15,7 @@ struct UploadController: RouteCollection {
     }
     
     func delete(req: Request) async throws -> Response {
+        
         let previousInfo = try await findPreviousInfoById(req: req)
         return try await req.delete(video: previousInfo)
     }

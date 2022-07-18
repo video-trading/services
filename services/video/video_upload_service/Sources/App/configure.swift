@@ -6,13 +6,14 @@ import common
 import env
 import MQTTNIO
 import client
+import JWT
 
 
 fileprivate func checkENV(_ app: Application) throws {
     let checker = EnvChecker(envs: [
         ENVIRONMENT_DB_KEY, ENVIRONMENT_S3_ENDPOINT,
         ENVIRONMENT_S3_REGION ,ENVIRONMENT_ACCESS_KEY,
-        ENVIRONMENT_SECRET_KEY
+        ENVIRONMENT_SECRET_KEY, ENVIRONMENT_PASSWORD,
     ])
     let checkResult = checker.check()
     
@@ -30,12 +31,15 @@ public func configure(_ app: Application) throws {
     )
     let cors = CORSMiddleware(configuration: corsConfiguration)
     app.middleware.use(cors, at: .beginning)
+    app.middleware.use(JWTMiddleWare())
+    
+    let initializeHelper = InitializeHelper(app: app)
     
     try checkENV(app)
-    try initializeDB(app)
-    initializeAWS(app)
-    try initializeMQTT(app)
-    
+    try initializeHelper.initializeDB()
+    try initializeHelper.initializeAWS()
+    try initializeHelper.initializeJWT()
+
     app.videoTranscoding.client = VideoTranscodingClient()
     
     // register routes

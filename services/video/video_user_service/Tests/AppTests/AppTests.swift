@@ -1,15 +1,47 @@
 @testable import App
+@testable import common
+@testable import model
 import XCTVapor
 
 final class AppTests: XCTestCase {
-    func testHelloWorld() throws {
+    let payload = JWTVerificationPayload(subject: .init(value: "Hello"), expiration: .init(value: .now.addingTimeInterval(10)), userId: "0xabcde")
+    
+    override func setUp() async throws {
+        setenv(ENVIRONMENT_DB_KEY, "mongodb://user:password@localhost:27017/video", 1)
+        setenv(ENVIRONMENT_S3_REGION, "sgp1", 1)
+        setenv(ENVIRONMENT_S3_ENDPOINT, "localhost:4566", 1)
+        setenv(ENVIRONMENT_S3_BUCKET_NAME, "video-trading", 1)
+        setenv(ENVIRONMENT_ACCESS_KEY, "test", 1)
+        setenv(ENVIRONMENT_SECRET_KEY, "test", 1)
+        setenv(ENVIRONMENT_PASSWORD, "password", 1)
+    }
+    
+    func testUser() async throws {
         let app = Application(.testing)
-        defer { app.shutdown() }
+        defer {
+            app.shutdown()
+        }
         try configure(app)
-
-        try app.test(.GET, "hello", afterResponse: { res in
+        let token = try app.jwt.signers.sign(payload)
+        var userId: String = ""
+        
+        try app.test(.POST, "video/user", beforeRequest: { req in
+            try req.content.encode(VideoInfoRequest(name: "abc", gender: "male", age: 10, userId: "0xasdf", id: []))
+            req.headers.bearerAuthorization = BearerAuthorization(token: token)
+            
+        }, afterResponse: { res in
+            let data = try res.content.decode(UserResponse.self)
             XCTAssertEqual(res.status, .ok)
-            XCTAssertEqual(res.body.string, "Hello, world!")
+            XCTAssertGreaterThan(data.id.uuidString.count, 1)
+            userId = data.id.uuidString
         })
+        
+        try app.test(.GET, "video/status/\(userId)", beforeRequest: { req in
+            req.headers.bearerAuthorization = BearerAuthorization(token: token)
+        }) { statusResult in
+            let status = try statusResult.content.decode(UserInfo.self)
+            XCTAssertEqual(status.status, .pending)
+        }
+        
     }
 }

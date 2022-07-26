@@ -11,6 +11,13 @@ let package = Package(
         .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0"),
         .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0"),
         .package(url: "https://github.com/vapor/fluent-mongo-driver.git", from: "1.0.0"),
+        .package(url: "https://github.com/soto-project/soto", from: "6.0.0"),
+        .package(url: "https://github.com/sirily11/env-checker", from: "1.0.0" ),
+        .package(url: "https://github.com/swift-server-community/mqtt-nio", from: "2.6.0"),
+        .package(url: "https://github.com/vapor/jwt.git", from: "4.0.0"),
+        .package(path: "../../../packages/model"),
+        .package(path: "../../../packages/common"),
+        .package(path: "../../../packages/client"),
     ],
     targets: [
         .target(

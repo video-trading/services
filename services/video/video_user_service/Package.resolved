@@ -1,6 +1,15 @@
 {
   "pins" : [
     {
+      "identity" : "alamofire",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Alamofire/Alamofire.git",
+      "state" : {
+        "revision" : "8dd85aee02e39dd280c75eef88ffdb86eed4b07b",
+        "version" : "5.6.2"
+      }
+    },
+    {
       "identity" : "async-http-client",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swift-server/async-http-client.git",
@@ -37,6 +46,15 @@
       }
     },
     {
+      "identity" : "env-checker",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/sirily11/env-checker",
+      "state" : {
+        "revision" : "95084d100149c8881d755c34cd0df08c6bf76b24",
+        "version" : "1.0.0"
+      }
+    },
+    {
       "identity" : "fluent",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/fluent.git",
@@ -64,12 +82,48 @@
       }
     },
     {
+      "identity" : "jmespath.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/adam-fowler/jmespath.swift.git",
+      "state" : {
+        "revision" : "4513d319c4aaa6c3b2ac18e1e6566a803515ad91",
+        "version" : "1.0.2"
+      }
+    },
+    {
+      "identity" : "jwt",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/vapor/jwt.git",
+      "state" : {
+        "revision" : "506d238a707c0e7c1d2cf690863902eaf3bc4e94",
+        "version" : "4.2.1"
+      }
+    },
+    {
+      "identity" : "jwt-kit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/vapor/jwt-kit.git",
+      "state" : {
+        "revision" : "aa7d9cd805b10c1ca17dfc53062ffbc695469cf4",
+        "version" : "4.6.1"
+      }
+    },
+    {
       "identity" : "mongokitten",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/OpenKitten/MongoKitten.git",
       "state" : {
         "revision" : "c3ca3bec61fec81c06d2275df8cde2dee72d1cab",
         "version" : "6.7.5"
+      }
+    },
+    {
+      "identity" : "mqtt-nio",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swift-server-community/mqtt-nio",
+      "state" : {
+        "revision" : "53d307b580f78354f3523a6cfde7cb3dbabfdde4",
+        "version" : "2.6.0"
       }
     },
     {
@@ -97,6 +151,24 @@
       "state" : {
         "revision" : "ffac7b3a127ce1e85fb232f1a6271164628809ad",
         "version" : "4.6.0"
+      }
+    },
+    {
+      "identity" : "soto",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/soto-project/soto",
+      "state" : {
+        "revision" : "9c938aadbbb33d6ed54d04dd6ba494f7f12e0905",
+        "version" : "6.0.0"
+      }
+    },
+    {
+      "identity" : "soto-core",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/soto-project/soto-core.git",
+      "state" : {
+        "revision" : "8e63c0f80db61f01c346f5109863bc2be29093e7",
+        "version" : "6.0.0"
       }
     },
     {

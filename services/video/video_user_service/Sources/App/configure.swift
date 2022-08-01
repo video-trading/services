@@ -8,8 +8,7 @@ import env
 
 fileprivate func checkENV(_ app: Application) throws {
     let checker = EnvChecker(envs: [
-        ENVIRONMENT_DB_KEY, ENVIRONMENT_S3_ENDPOINT,
-        ENVIRONMENT_S3_REGION ,ENVIRONMENT_ACCESS_KEY,
+        ENVIRONMENT_DB_KEY, ENVIRONMENT_ACCESS_KEY,
         ENVIRONMENT_SECRET_KEY, ENVIRONMENT_PASSWORD,
     ])
     let checkResult = checker.check()

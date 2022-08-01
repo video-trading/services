@@ -15,7 +15,7 @@ struct userController: RouteCollection {
         return userData
     }
     func get_user(request:Request)async throws ->User{
-        let id = request.parameters.get("id", as: UUID.self)
+        let id = request.parameter.require("Id")
         
         guard let id = id else{
             throw Abort(.badRequest)

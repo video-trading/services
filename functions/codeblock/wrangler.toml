@@ -1,4 +1,4 @@
-name = "authentication"
+name = "codeblock"
 main = "src/index.ts"
 compatibility_date = "2022-07-17"
 node_compat = true

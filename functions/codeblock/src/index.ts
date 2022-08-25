@@ -1,8 +1,13 @@
-import { getParserByLanguage } from "@etherdata-blockchain/codeblock";
+import {
+  CodeBlock,
+  getParserByLanguage,
+} from "@etherdata-blockchain/codeblock";
 
 export interface Message {
-  code: string;
+  code?: string;
+  blocks?: CodeBlock<any>[];
   language: string;
+  mode: "generation" | "parsing";
 }
 
 interface HandlerResponse {
@@ -10,20 +15,45 @@ interface HandlerResponse {
   body: string;
 }
 
-export function handler({ code, language }: Message): HandlerResponse {
+export function handler({
+  code,
+  language,
+  mode,
+  blocks,
+}: Message): HandlerResponse {
   try {
     const parser = getParserByLanguage(language);
-    const blocks = parser.parse(code);
-    const generatedCode = parser.generate(blocks);
+    if (mode === "parsing") {
+      const blocks = parser.parse(code!);
 
-    const data = {
-      blocks,
-      code: generatedCode,
-    };
+      const data = {
+        blocks,
+      };
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify(data),
+      };
+    }
+
+    if (mode === "generation") {
+      const code = parser.generate(blocks!);
+
+      const data = {
+        code,
+      };
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify(data),
+      };
+    }
 
     return {
-      statusCode: 200,
-      body: JSON.stringify(data),
+      statusCode: 400,
+      body: JSON.stringify({
+        message: "Error: mode not supported",
+      }),
     };
   } catch (err) {
     return {

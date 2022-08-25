@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        function:  ["authentication"]
+        function:  ["authentication", "codeblock"]
     steps:
       - uses: actions/checkout@v3
       - uses: pnpm/action-setup@v2

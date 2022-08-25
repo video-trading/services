@@ -25,7 +25,7 @@ struct AnalyzingRequest: Content {
     /**
      Length of the video in seconds
      */
-    var length: Int
+    var length: Float
     
     /**
      URL for the cover.

@@ -19,13 +19,19 @@ public struct AnalyzingJob: Content {
      */
     public var source: String
     
-    public init(cover: String, source: String) {
+    public var videoId: String
+    
+    public var fileName: String
+    
+    public init(cover: String, source: String, videoId: String, fileName: String) {
         self.cover = cover
         self.source = source
+        self.videoId = videoId
+        self.fileName = fileName
     }
 
     
-    public static func fromVideo(req: Request, videoSource: String, videoId: String) async throws -> AnalyzingJob {
+    public static func fromVideo(req: Request, videoSource: String, videoId: String, fileName: String) async throws -> AnalyzingJob {
         let endpoint = Environment.get(ENVIRONMENT_S3_ENDPOINT)!
         let bucket = Environment.get(ENVIRONMENT_S3_BUCKET_NAME)!
         
@@ -38,7 +44,7 @@ public struct AnalyzingJob: Content {
             throw Abort(.internalServerError, reason: "Cannot construct a pre-signed valid cover url: \(coverURL)")
         }
         
-        return AnalyzingJob(cover: presigned.absoluteString, source: videoSource)
+        return AnalyzingJob(cover: presigned.absoluteString, source: videoSource, videoId: videoId, fileName: fileName)
     }
 }
 

@@ -64,7 +64,7 @@ public final class VideoInfo: Model, VideoInfoProtocol {
     public var transcoding: [TranscodingInfo]
 
     @OptionalField(key: "length")
-    public var length: Int?
+    public var length: Float?
 
     @Field(key: "file_name")
     public var fileName: String
@@ -79,7 +79,7 @@ public final class VideoInfo: Model, VideoInfoProtocol {
 
     public init(id: UUID? = nil, title: String, labels: [String], description: String?, cover: String?,
                 source: String?, transcoding: [TranscodingInfo], status: VideoStatus, statusDescription: String?,
-                length: Int?, fileName: String, bucketName: String, quality: VideoResolution? = nil)
+                length: Float?, fileName: String, bucketName: String, quality: VideoResolution? = nil)
     {
         self.id = id
         self.title = title

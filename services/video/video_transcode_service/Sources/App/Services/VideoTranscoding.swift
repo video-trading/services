@@ -17,7 +17,7 @@ extension Request: VideoTranscodingProtocol {
             throw Abort(.notFound, reason: "Cannot find video with id: \(id)")
         }
         let downloadURL = try await getDownloadURL(video: video)
-        let job = try await AnalyzingJob.fromVideo(req: self, videoSource: downloadURL, videoId: id.uuidString)
+        let job = try await AnalyzingJob.fromVideo(req: self, videoSource: downloadURL, videoId: id.uuidString, fileName: video.fileName)
         let encodedData = try JSONEncoder().encode(job)
         
         video.status = .encoding
